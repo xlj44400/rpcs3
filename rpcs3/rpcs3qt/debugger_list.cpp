@@ -65,7 +65,7 @@ void debugger_list::ShowAddress(u32 addr, bool force)
 {
 	auto IsBreakpoint = [this](u32 pc)
 	{
-		return m_breakpoint_handler->HasBreakpoint(pc);
+		return m_breakpoint_handler->HasBreakpoint(pc, breakpoint_type::bp_execute);
 	};
 
 	const bool center_pc = xgui_settings->GetValue(gui::d_centerPC).toBool();

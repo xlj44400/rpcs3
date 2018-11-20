@@ -29,6 +29,8 @@
 
 constexpr auto qstr = QString::fromStdString;
 
+breakpoint_handler *g_breakpoint_handler;
+
 debugger_frame::debugger_frame(std::shared_ptr<gui_settings> settings, QWidget *parent)
 	: custom_dock_widget(tr("Debugger"), parent), xgui_settings(settings)
 {
@@ -50,6 +52,7 @@ debugger_frame::debugger_frame(std::shared_ptr<gui_settings> settings, QWidget *
 	m_breakpoint_handler = new breakpoint_handler();
 	m_breakpoint_list = new breakpoint_list(this, m_breakpoint_handler);
 
+	g_breakpoint_handler = m_breakpoint_handler;
 	m_debugger_list = new debugger_list(this, settings, m_breakpoint_handler);
 	m_debugger_list->installEventFilter(this);
 
@@ -462,7 +465,7 @@ void debugger_frame::DoUpdate()
 	// Check if we need to disable a step over bp
 	if (m_last_step_over_breakpoint != umax && GetPc() == m_last_step_over_breakpoint)
 	{
-		m_breakpoint_handler->RemoveBreakpoint(m_last_step_over_breakpoint);
+		m_breakpoint_handler->RemoveBreakpoint(m_last_step_over_breakpoint, breakpoint_type::bp_execute);
 		m_last_step_over_breakpoint = -1;
 	}
 
@@ -636,13 +639,13 @@ void debugger_frame::DoStep(bool stepOver)
 
 				// Set breakpoint on next instruction
 				u32 next_instruction_pc = current_instruction_pc + 4;
-				m_breakpoint_handler->AddBreakpoint(next_instruction_pc);
+				m_breakpoint_handler->AddBreakpoint(next_instruction_pc, breakpoint_type::bp_execute);
 
 				// Undefine previous step over breakpoint if it hasnt been already
 				// This can happen when the user steps over a branch that doesn't return to itself
 				if (m_last_step_over_breakpoint != umax)
 				{
-					m_breakpoint_handler->RemoveBreakpoint(next_instruction_pc);
+					m_breakpoint_handler->RemoveBreakpoint(next_instruction_pc, breakpoint_type::bp_execute);
 				}
 
 				m_last_step_over_breakpoint = next_instruction_pc;
