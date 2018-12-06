@@ -1155,6 +1155,17 @@ void ppu_trap(ppu_thread& ppu, u64 addr)
 	fmt::throw_exception("Unknown/Illegal opcode 0x08x (0x%llx)", op, addr);
 }
 
+static void ppu_debugbp(ppu_thread& ppu, u64 addr)
+{
+	ppu.state += cpu_flag::dbg_pause;
+	ppu.cia = ::narrow<u32>(addr);
+
+	if (ppu.test_stopped())
+	{
+		return;
+	}
+}
+
 static void ppu_check(ppu_thread& ppu, u64 addr)
 {
 	ppu.cia = ::narrow<u32>(addr);
@@ -1991,6 +2002,7 @@ extern void ppu_initialize(const ppu_module& info)
 			{ "__dcbz", reinterpret_cast<u64>(+[](u32 addr){ alignas(64) static constexpr u8 z[128]{}; do_cell_atomic_128_store(addr, z); }) },
 			{ "__resupdate", reinterpret_cast<u64>(vm::reservation_update) },
 			{ "__resinterp", reinterpret_cast<u64>(ppu_reservation_fallback) },
+			{ "__debugbp", reinterpret_cast<u64>(ppu_debugbp) },
 		};
 
 		for (u64 index = 0; index < 1024; index++)

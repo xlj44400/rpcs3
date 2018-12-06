@@ -224,6 +224,8 @@ public:
 		return values;
 	}
 
+	void SetBreakpoint();
+
 	// Add multiple elements
 	llvm::Value* Add(std::initializer_list<llvm::Value*>);
 

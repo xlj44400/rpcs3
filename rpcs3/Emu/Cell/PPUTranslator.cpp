@@ -142,6 +142,11 @@ Type* PPUTranslator::GetContextType()
 	return m_thread_type;
 }
 
+void PPUTranslator::SetBreakpoint()
+{
+	Call(GetType<void>(), "__debugbp", m_thread, GetAddr())->setTailCallKind(llvm::CallInst::TCK_Tail);
+}
+
 Function* PPUTranslator::Translate(const ppu_function& info)
 {
 	m_function = m_module->getFunction(info.name);
