@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "sys_ppu_thread.h"
 
+#include "Emu/Memory/vm.h"
+#include "Emu/System.h"
 #include "Emu/IdManager.h"
 
 #include "Emu/Cell/ErrorCodes.h"
@@ -360,8 +362,8 @@ error_code _sys_ppu_thread_create(ppu_thread& ppu, vm::ptr<u64> thread_id, vm::p
 {
 	ppu.state += cpu_flag::wait;
 
-	sys_ppu_thread.warning("_sys_ppu_thread_create(thread_id=*0x%x, param=*0x%x, arg=0x%llx, unk=0x%llx, prio=%d, stacksize=0x%x, flags=0x%llx, threadname=*0x%x)",
-		thread_id, param, arg, unk, prio, _stacksz, flags, threadname);
+	sys_ppu_thread.warning("_sys_ppu_thread_create(thread_id=*0x%x, param=*0x%x, arg=0x%llx, unk=0x%llx, prio=%d, stacksize=0x%x, flags=0x%llx, threadname=*0x%x, entry=0x%x)",
+		thread_id, param, arg, unk, prio, _stacksz, flags, threadname, param->entry);
 
 	// thread_id is checked for null in stub -> CELL_ENOMEM
 	// unk is set to 0 in sys_ppu_thread_create stub
