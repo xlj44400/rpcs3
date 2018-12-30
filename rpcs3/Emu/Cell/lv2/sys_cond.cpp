@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "sys_cond.h"
 
+#include "Emu/Memory/vm.h"
+#include "Emu/System.h"
 #include "Emu/IdManager.h"
 #include "Emu/IPC.h"
 
@@ -15,7 +17,7 @@ error_code sys_cond_create(ppu_thread& ppu, vm::ptr<u32> cond_id, u32 mutex_id, 
 {
 	ppu.state += cpu_flag::wait;
 
-	sys_cond.warning("sys_cond_create(cond_id=*0x%x, mutex_id=0x%x, attr=*0x%x)", cond_id, mutex_id, attr);
+	//sys_cond.warning("sys_cond_create(cond_id=*0x%x, mutex_id=0x%x, attr=*0x%x)", cond_id, mutex_id, attr);
 
 	auto mutex = idm::get<lv2_obj, lv2_mutex>(mutex_id);
 
@@ -41,6 +43,8 @@ error_code sys_cond_create(ppu_thread& ppu, vm::ptr<u32> cond_id, u32 mutex_id, 
 	}
 
 	*cond_id = idm::last_id();
+	sys_cond.warning("sys_cond_create(cond_id=0x%x, mutex_id=0x%x, attr=*0x%x)", *cond_id, mutex_id, attr);
+
 	return CELL_OK;
 }
 
