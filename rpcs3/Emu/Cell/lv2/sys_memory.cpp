@@ -25,8 +25,6 @@ error_code sys_memory_allocate(cpu_thread& cpu, u32 size, u64 flags, vm::ptr<u32
 {
 	cpu.state += cpu_flag::wait;
 
-	sys_memory.warning("sys_memory_allocate(size=0x%x, flags=0x%llx, alloc_addr=*0x%x)", size, flags, alloc_addr);
-
 	if (!size)
 	{
 		return {CELL_EALIGN, size};
@@ -67,6 +65,7 @@ error_code sys_memory_allocate(cpu_thread& cpu, u32 size, u64 flags, vm::ptr<u32
 			{
 				vm::lock_sudo(addr, size);
 				*alloc_addr = addr;
+				sys_memory.warning("sys_memory_allocate(size=0x%x, flags=0x%llx, alloc_addr=*0x%x, *alloc_addr=0x%x)", size, flags, alloc_addr, *alloc_addr);
 				return CELL_OK;
 			}
 
