@@ -266,6 +266,33 @@ std::string vfs::get(std::string_view vpath, std::vector<std::string>* out_dir, 
 	}
 
 	// Merge path fragments
+/*	std::string merged;
+	{
+		size_t mergedSize = result.size();
+		for (const auto& piece : result)
+			mergedSize += piece.size();
+
+		merged.reserve(mergedSize);
+	}
+	for (size_t i=0; i<result.size(); i++)
+	{
+		const auto& piece = result[i];
+		if (piece.length() > 0 && i != result.size()-1 && *piece.crbegin() == '.')
+		{
+			merged += piece.substr(0, piece.length()-1);
+			merged += '/'; merged += '.';
+			merged += result[++i];
+			if (i != result.size() - 1)
+				merged += '/';
+		}
+		else
+		{
+			merged += piece;
+			if (i != result.size()-1)
+				merged += '/';
+		}
+	}*/
+	//return std::string{result_base} + vfs::escape(merged);
 	if (out_path)
 	{
 		*out_path =  "/";
@@ -450,6 +477,15 @@ std::string vfs::escape(std::string_view name, bool escape_slash)
 			result += c;
 			break;
 		}
+		case '.':
+		{
+			if ((i+1 == s) || (i+1 != s && name[i+1] == '/'))
+				result +=  reinterpret_cast<const char*>(u8"｡");
+			else
+				result += '.';
+				
+			break;
+		}
 		case char2{u8"！"[0]}:
 		{
 			// Escape full-width characters 0xFF01..0xFF5e with ！ (0xFF01)
@@ -511,8 +547,20 @@ std::string vfs::unescape(std::string_view name)
 		}
 	};
 
+	const char* specialDot = reinterpret_cast<const char*>(u8"｡");
 	for (std::size_t i = 0, s = name.size(); i < s; i++)
 	{
+		const size_t nexti = i+strlen(specialDot)+1;
+		if (nexti <= s && memcmp(&name[i],specialDot,strlen(specialDot)+1 == 0))
+		{			
+			if (nexti == s || name[nexti] == '/')
+			{
+				result += '.';
+				i = nexti-1;
+				continue;
+			}
+		}
+
 		switch (char2 c = name[i])
 		{
 		case char2{u8"！"[0]}:
