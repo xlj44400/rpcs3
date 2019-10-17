@@ -488,6 +488,10 @@ static auto ppu_load_exports(ppu_linkage_info* link, u32 exports_start, u32 expo
 			ppu_loader.fatal("Unexpected num_tlsvar (%u)!", lib.num_tlsvar);
 		}
 
+		bool requires_perfect = false;
+		if (g_cfg.core.spurs_urgent_queue_size != 0 && module_name == "cellSpurs")
+			requires_perfect = true;
+
 		// Static module
 		const auto _sm = ppu_module_manager::get_module(module_name);
 
@@ -521,7 +525,7 @@ static auto ppu_load_exports(ppu_linkage_info* link, u32 exports_start, u32 expo
 				// Static function
 				const auto _sf = _sm && _sm->functions.count(fnid) ? &_sm->functions.at(fnid) : nullptr;
 
-				if (_sf && (_sf->flags & MFF_FORCED_HLE))
+				if (_sf && ((_sf->flags & MFF_FORCED_HLE) || (requires_perfect && (_sf->flags & MFF_PERFECT))))
 				{
 					// Inject a branch to the HLE implementation
 					const u32 _entry = vm::read32(faddr);
