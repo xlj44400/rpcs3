@@ -1744,6 +1744,27 @@ settings_dialog::settings_dialog(std::shared_ptr<gui_settings> gui_settings, std
 	m_emu_settings->EnhanceCheckBox(ui->hookStFunc, emu_settings_type::HookStaticFuncs);
 	SubscribeTooltip(ui->hookStFunc, tooltips.settings.hook_static_functions);
 
+	// Comboboxes: spu instructions accuracy
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFCGT, emu_settings_type::SPU_FCGT_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFCMGT, emu_settings_type::SPU_FCMGT_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFM, emu_settings_type::SPU_FM_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFNMS, emu_settings_type::SPU_FNMS_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFMA, emu_settings_type::SPU_FMA_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFMS, emu_settings_type::SPU_FMS_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFREST, emu_settings_type::SPU_FREST_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFRSQEST, emu_settings_type::SPU_FRSQEST_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFI, emu_settings_type::SPU_FI_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFA, emu_settings_type::SPU_FA_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFS, emu_settings_type::SPU_FS_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFESD, emu_settings_type::SPU_FESD_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFRDS, emu_settings_type::SPU_FRDS_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFCEQ, emu_settings_type::SPU_FCEQ_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFCMEQ, emu_settings_type::SPU_FCMEQ_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyCFLTS, emu_settings_type::SPU_CFLTS_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyCFLTU, emu_settings_type::SPU_CFLTU_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyCSFLT, emu_settings_type::SPU_CSFLT_Accuracy);
+	m_emu_settings->EnhanceComboBox(ui->spuAccuracyCUFLT, emu_settings_type::SPU_CUFLT_Accuracy);
+
 	// Layout fix for High Dpi
 	layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
