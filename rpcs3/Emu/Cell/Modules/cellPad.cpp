@@ -249,7 +249,30 @@ error_code cellPadGetData(u32 port_no, vm::ptr<CellPadData> data)
 					break;
 				case CELL_PAD_CTRL_CROSS:
 					if (pad->m_press_cross != button.m_value) btnChanged = true;
-					pad->m_press_cross = button.m_value;
+
+					if (fakeinput_toggle)
+					{
+						static u64 timed_change = 0;
+						static u16 button_value = 0;
+						timed_change++;
+						if (timed_change % 50 == 0)
+						{
+							button_value = button_value == 255 ? 0 : 255;
+							btnChanged   = true;
+						}
+
+						if (button_value)
+						{
+							pad->m_digital_2 |= button.m_outKeyCode;
+						}
+
+						pad->m_press_cross = button_value;
+					}
+					else
+					{
+						pad->m_press_cross = button.m_value;
+					}
+
 					break;
 				case CELL_PAD_CTRL_CIRCLE:
 					if (pad->m_press_circle != button.m_value) btnChanged = true;
@@ -291,32 +314,6 @@ error_code cellPadGetData(u32 port_no, vm::ptr<CellPadData> data)
 			case CELL_PAD_BTN_OFFSET_ANALOG_LEFT_Y:
 				if (pad->m_analog_left_y != stick.m_value) btnChanged = true;
 				pad->m_analog_left_y = stick.m_value;
-				break;
-			case CELL_PAD_CTRL_CROSS:
-				if (pad->m_press_cross != button.m_value) btnChanged = true;
-
-				if(fakeinput_toggle)
-				{
-					static u64 timed_change = 0;
-					static u16 button_value = 0;
-					timed_change++;
-					if (timed_change % 50 == 0)
-					{
-						button_value = button_value == 255 ? 0 : 255;
-						btnChanged   = true;
-					}
-
-					if(button_value)
-					{
-						pad->m_digital_2 |= button.m_outKeyCode;
-					}
-
-					pad->m_press_cross = button_value;
-				}
-				else
-				{
-					pad->m_press_cross = button.m_value;
-				}
 				break;
 			case CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_X:
 				if (pad->m_analog_right_x != stick.m_value) btnChanged = true;
