@@ -31,7 +31,7 @@ error_code _sys_lwmutex_create(ppu_thread& ppu, vm::ptr<u32> lwmutex_id, u32 pro
 	{
 		*lwmutex_id = id;
 
-		sys_lwmutex.warning("lwmutex id: %d", id);
+		sys_lwmutex.warning("lwmutex id: 0x%x", id);
 
 		return CELL_OK;
 	}
