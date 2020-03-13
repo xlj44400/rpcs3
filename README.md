@@ -1,8 +1,49 @@
 RPCS3
 =====
+Rebase of [rajkosto's mgs4 branch](https://github.com/rajkosto/rpcs3/tree/cab1766db1d3921fab0093dac7cb159f54c6b149) onto latest master.
 
-[![Travis (.org) branch](https://img.shields.io/travis/RPCS3/rpcs3/master?label=Travis%20CI&logo=travis)](https://travis-ci.org/RPCS3/rpcs3)
-[![Azure Build Status](https://dev.azure.com/nekotekina/nekotekina/_apis/build/status/RPCS3.rpcs3?branchName=master)](https://dev.azure.com/nekotekina/nekotekina/_build?definitionId=4&branchName=master)
+[![Build Status](https://dev.azure.com/illusion9804/rpcs3/_apis/build/status/illusion0001.rpcs3?branchName=mgs4-new)](https://dev.azure.com/illusion9804/rpcs3/_build/latest?definitionId=3&branchName=mgs4-new)
+
+<details> 
+<summary>How to download build (Click to expand)</summary>
+
+![](https://cdn.discordapp.com/attachments/644808568561729550/740125930420437012/unknown.png)
+
+</details>
+
+# Suggested settings 
+
+<details> 
+<summary>MGS4 (Click to expand)</summary>
+
+![](https://cdn.discordapp.com/attachments/561407879823753217/732686087108952204/unknown.png) 
+
+</details>
+
+<details> 
+<summary>TLOU (Click to expand)</summary>
+
+![](https://cdn.discordapp.com/attachments/561407879823753217/732684784362455180/unknown.png) 
+
+</details>
+
+<details> 
+<summary>Uncharted 1-3 (Click to expand)</summary>
+
+__Set AF to Auto and LLE libvdec for Uncharted 2__
+
+![](https://cdn.discordapp.com/attachments/561407879823753217/732685647193571368/unknown.png) 
+
+</details>
+
+<details> 
+<summary>RDR (Click to expand)</summary>
+
+![](https://cdn.discordapp.com/attachments/561407879823753217/732686561308573696/unknown.png) 
+
+</details>
+
+<!--[![Travis (.org) branch](https://img.shields.io/travis/RPCS3/rpcs3/master?label=Travis%20CI&logo=travis)](https://travis-ci.org/RPCS3/rpcs3)
 [![Cirrus CI - Base Branch Build Status](https://img.shields.io/cirrus/github/RPCS3/rpcs3?label=Cirrus%20CI%20(FreeBSD)&logo=cirrus-ci)](https://cirrus-ci.com/github/RPCS3/rpcs3)
 [![RPCS3 discord server](https://img.shields.io/discord/272035812277878785?color=%237289DA&label=RPCS3%20Discord&logo=discord&logoColor=white)](https://discord.me/rpcs3)
 
@@ -38,4 +79,4 @@ Don't forget to have your graphics driver up to date and to install the [Visual 
 
 ## License
 
-Most files are licensed under the terms of GNU GPLv2 License; see LICENSE file for details. Some files may be licensed differently; check appropriate file headers for details.
+Most files are licensed under the terms of GNU GPLv2 License; see LICENSE file for details. Some files may be licensed differently; check appropriate file headers for details.-->
