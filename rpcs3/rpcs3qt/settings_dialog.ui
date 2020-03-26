@@ -3360,6 +3360,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="reprotect_hack">
+              <property name="text">
+               <string>Reprotect hack</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="disableVulkanMemAllocator">
               <property name="text">
                <string>Disable Vulkan Memory Allocator</string>
