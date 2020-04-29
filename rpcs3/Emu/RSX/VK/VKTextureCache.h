@@ -406,6 +406,7 @@ namespace vk
 			AUDIT(synchronized);
 
 			// Synchronize, reset dma_fence after waiting
+			if (!g_cfg.video.vk_event_hack)
 			vk::wait_for_event(dma_fence.get(), GENERAL_WAIT_TIMEOUT);
 
 			const auto range = get_confirmed_range();
