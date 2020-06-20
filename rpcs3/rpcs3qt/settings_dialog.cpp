@@ -1780,6 +1780,8 @@ settings_dialog::settings_dialog(std::shared_ptr<gui_settings> gui_settings, std
 	m_emu_settings->EnhanceCheckBox(ui->hookStFunc, emu_settings_type::HookStaticFuncs);
 	SubscribeTooltip(ui->hookStFunc, tooltips.settings.hook_static_functions);
 
+	m_emu_settings->EnhanceSpinBox(ui->ppu_trap, emu_settings_type::StubPPUTraps);
+
 	// Comboboxes: spu instructions accuracy
 	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFCGT, emu_settings_type::SPU_FCGT_Accuracy);
 	m_emu_settings->EnhanceComboBox(ui->spuAccuracyFCMGT, emu_settings_type::SPU_FCMGT_Accuracy);
