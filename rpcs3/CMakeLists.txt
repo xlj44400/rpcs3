@@ -132,6 +132,8 @@ if(APPLE)
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/bin/Icons $<TARGET_FILE_DIR:rpcs3>/../Resources/Icons
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/bin/config $<TARGET_FILE_DIR:rpcs3>/../Resources/config
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/bin/GuiConfigs $<TARGET_FILE_DIR:rpcs3>/../Resources/GuiConfigs
 			COMMAND "${Qt5_DIR}/../../../bin/macdeployqt" "${PROJECT_BINARY_DIR}/bin/rpcs3.app")
 elseif(UNIX)
@@ -159,6 +161,8 @@ if(UNIX AND NOT APPLE)
 			DESTINATION ${CMAKE_INSTALL_PREFIX}/share/metainfo)
 	# Install other files
 	install(DIRECTORY ../bin/Icons
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/rpcs3)
+	install(DIRECTORY ../bin/config
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/rpcs3)
 	install(DIRECTORY ../bin/GuiConfigs
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/rpcs3)
