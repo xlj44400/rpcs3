@@ -143,7 +143,7 @@ void windows_poll(pollfd* fds, unsigned long nfds, int timeout, bool* connecting
 
 	if (r == SOCKET_ERROR)
 	{
-		sys_net.error("WSAPoll failed: %u", WSAGetLastError());
+		// sys_net.error("WSAPoll failed: %u", WSAGetLastError());
 		return;
 	}
 
@@ -207,7 +207,7 @@ static sys_net_error get_last_error(bool is_blocking, int native_error = 0)
 
 	if (name && result != SYS_NET_EWOULDBLOCK && result != SYS_NET_EINPROGRESS)
 	{
-		sys_net.error("Socket error %s", name);
+		// sys_net.error("Socket error %s", name);
 	}
 
 	if (is_blocking && result == SYS_NET_EWOULDBLOCK)
@@ -570,7 +570,7 @@ error_code sys_net_bnet_bind(ppu_thread& ppu, s32 s, vm::cptr<sys_net_sockaddr> 
 		// 0 presumably defaults to AF_INET(to check?)
 		if (_addr->sa_family != SYS_NET_AF_INET && _addr->sa_family != 0)
 		{
-			sys_net.error("sys_net_bnet_bind(s=%d): unsupported sa_family (%d)", s, addr->sa_family);
+			// sys_net.error("sys_net_bnet_bind(s=%d): unsupported sa_family (%d)", s, addr->sa_family);
 			return SYS_NET_EAFNOSUPPORT;
 		}
 
@@ -671,7 +671,7 @@ error_code sys_net_bnet_connect(ppu_thread& ppu, s32 s, vm::ptr<sys_net_sockaddr
 		}
 		else if (_addr->sa_family != SYS_NET_AF_INET)
 		{
-			sys_net.error("sys_net_bnet_connect(s=%d): unsupported sa_family (%d)", s, _addr->sa_family);
+			// sys_net.error("sys_net_bnet_connect(s=%d): unsupported sa_family (%d)", s, _addr->sa_family);
 		}
 
 		if (::connect(sock.socket, reinterpret_cast<struct sockaddr*>(&name), namelen) == 0)
@@ -860,7 +860,7 @@ error_code sys_net_bnet_getpeername(ppu_thread& ppu, s32 s, vm::ptr<sys_net_sock
 		paddr_p2p->sin_port                        = 3658;
 		struct in_addr rep;
 		rep.s_addr = htonl(paddr->sin_addr);
-		sys_net.error("Reporting P2P socket address as %s:%d:%d", rep, paddr_p2p->sin_port, paddr_p2p->sin_vport);
+		// sys_net.error("Reporting P2P socket address as %s:%d:%d", rep, paddr_p2p->sin_port, paddr_p2p->sin_vport);
 	}
 
 	return CELL_OK;
@@ -1059,7 +1059,7 @@ error_code sys_net_bnet_getsockopt(ppu_thread& ppu, s32 s, s32 level, s32 optnam
 			}
 			default:
 			{
-				sys_net.error("sys_net_bnet_getsockopt(s=%d, SOL_SOCKET): unknown option (0x%x)", s, optname);
+				// sys_net.error("sys_net_bnet_getsockopt(s=%d, SOL_SOCKET): unknown option (0x%x)", s, optname);
 				return SYS_NET_EINVAL;
 			}
 			}
@@ -1084,14 +1084,14 @@ error_code sys_net_bnet_getsockopt(ppu_thread& ppu, s32 s, s32 level, s32 optnam
 			}
 			default:
 			{
-				sys_net.error("sys_net_bnet_getsockopt(s=%d, IPPROTO_TCP): unknown option (0x%x)", s, optname);
+				// sys_net.error("sys_net_bnet_getsockopt(s=%d, IPPROTO_TCP): unknown option (0x%x)", s, optname);
 				return SYS_NET_EINVAL;
 			}
 			}
 		}
 		else
 		{
-			sys_net.error("sys_net_bnet_getsockopt(s=%d): unknown level (0x%x)", s, level);
+			// sys_net.error("sys_net_bnet_getsockopt(s=%d): unknown level (0x%x)", s, level);
 			return SYS_NET_EINVAL;
 		}
 
@@ -1299,7 +1299,7 @@ error_code sys_net_bnet_recvfrom(ppu_thread& ppu, s32 s, vm::ptr<void> buf, u32 
 	if (!sock)
 	{
 		if (type == SYS_NET_SOCK_DGRAM_P2P)
-			sys_net.error("Error recvfrom(bad socket)");
+			// sys_net.error("Error recvfrom(bad socket)");
 		return -SYS_NET_EBADF;
 	}
 
@@ -1311,7 +1311,7 @@ error_code sys_net_bnet_recvfrom(ppu_thread& ppu, s32 s, vm::ptr<void> buf, u32 
 		}
 
 		if (type == SYS_NET_SOCK_DGRAM_P2P)
-			sys_net.error("Error recvfrom(result early): %d", result);
+			// sys_net.error("Error recvfrom(result early): %d", result);
 
 		return -result;
 	}
@@ -1331,14 +1331,14 @@ error_code sys_net_bnet_recvfrom(ppu_thread& ppu, s32 s, vm::ptr<void> buf, u32 
 		if (result)
 		{
 			if (type == SYS_NET_SOCK_DGRAM_P2P)
-				sys_net.error("Error recvfrom(result): %d", result);
+				// sys_net.error("Error recvfrom(result): %d", result);
 			return -result;
 		}
 
 		if (ppu.gpr[3] == static_cast<u64>(-SYS_NET_EINTR))
 		{
 			if (type == SYS_NET_SOCK_DGRAM_P2P)
-				sys_net.error("Error recvfrom(interrupted)");
+				// sys_net.error("Error recvfrom(interrupted)");
 			return -SYS_NET_EINTR;
 		}
 
@@ -1373,13 +1373,13 @@ error_code sys_net_bnet_recvfrom(ppu_thread& ppu, s32 s, vm::ptr<void> buf, u32 
 
 			const u16 daport  = reinterpret_cast<sys_net_sockaddr_in*>(addr.get_ptr())->sin_port;
 			const u16 davport = reinterpret_cast<sys_net_sockaddr_in_p2p*>(addr.get_ptr())->sin_vport;
-			sys_net.error("Received a P2P packet from %s:%d:%d", reinterpret_cast<::sockaddr_in*>(&native_addr)->sin_addr, daport, davport);
+			//  sys_net.error("Received a P2P packet from %s:%d:%d", reinterpret_cast<::sockaddr_in*>(&native_addr)->sin_addr, daport, davport);
 		}
 	}
 
 	// Length
 	if (type == SYS_NET_SOCK_DGRAM_P2P)
-		sys_net.error("Ok recvfrom: %d", native_result);
+		//  sys_net.error("Ok recvfrom: %d", native_result);
 
 	return not_an_error(native_result);
 }
@@ -1388,7 +1388,7 @@ error_code sys_net_bnet_recvmsg(ppu_thread& ppu, s32 s, vm::ptr<sys_net_msghdr> 
 {
 	ppu.state += cpu_flag::wait;
 
-	sys_net.todo("sys_net_bnet_recvmsg(s=%d, msg=*0x%x, flags=0x%x)", s, msg, flags);
+	// sys_net.todo("sys_net_bnet_recvmsg(s=%d, msg=*0x%x, flags=0x%x)", s, msg, flags);
 	return CELL_OK;
 }
 
@@ -1396,7 +1396,7 @@ error_code sys_net_bnet_sendmsg(ppu_thread& ppu, s32 s, vm::cptr<sys_net_msghdr>
 {
 	ppu.state += cpu_flag::wait;
 
-	sys_net.todo("sys_net_bnet_sendmsg(s=%d, msg=*0x%x, flags=0x%x)", s, msg, flags);
+	// sys_net.todo("sys_net_bnet_sendmsg(s=%d, msg=*0x%x, flags=0x%x)", s, msg, flags);
 	return CELL_OK;
 }
 
@@ -1413,13 +1413,13 @@ error_code sys_net_bnet_sendto(ppu_thread& ppu, s32 s, vm::cptr<void> buf, u32 l
 
 	if (addr && addrlen < 8)
 	{
-		sys_net.error("sys_net_bnet_sendto(s=%d): bad addrlen (%u)", s, addrlen);
+		//  sys_net.error("sys_net_bnet_sendto(s=%d): bad addrlen (%u)", s, addrlen);
 		return -SYS_NET_EINVAL;
 	}
 
 	if (addr && addr->sa_family != SYS_NET_AF_INET)
 	{
-		sys_net.error("sys_net_bnet_sendto(s=%d): unsupported sa_family (%d)", s, addr->sa_family);
+		//  sys_net.error("sys_net_bnet_sendto(s=%d): unsupported sa_family (%d)", s, addr->sa_family);
 		return -SYS_NET_EAFNOSUPPORT;
 	}
 
@@ -1465,7 +1465,7 @@ error_code sys_net_bnet_sendto(ppu_thread& ppu, s32 s, vm::cptr<void> buf, u32 l
 		if (sock.type == SYS_NET_SOCK_DGRAM_P2P && addr)
 		{
 			const u16 daport = std::bit_cast<be_t<u16>, u16>(name.sin_port);
-			sys_net.error("Sending a P2P packet to %s:%d:%d", name.sin_addr, daport, davport);
+			//  sys_net.error("Sending a P2P packet to %s:%d:%d", name.sin_addr, daport, davport);
 			name.sin_port = std::bit_cast<u16, be_t<u16>>(daport + davport); // htons(daport + davport)
 		}
 
@@ -1526,14 +1526,14 @@ error_code sys_net_bnet_sendto(ppu_thread& ppu, s32 s, vm::cptr<void> buf, u32 l
 	if (!sock)
 	{
 		if (type == SYS_NET_SOCK_DGRAM_P2P)
-			sys_net.error("Error sendto(bad socket)");
+			//  sys_net.error("Error sendto(bad socket)");
 		return -SYS_NET_EBADF;
 	}
 
 	if (!sock.ret && result)
 	{
 		if (type == SYS_NET_SOCK_DGRAM_P2P)
-			sys_net.error("Error sendto(early result): %d", result);
+			//  sys_net.error("Error sendto(early result): %d", result);
 
 		if (result == SYS_NET_EWOULDBLOCK)
 		{
@@ -1557,21 +1557,21 @@ error_code sys_net_bnet_sendto(ppu_thread& ppu, s32 s, vm::cptr<void> buf, u32 l
 		if (result)
 		{
 			if (type == SYS_NET_SOCK_DGRAM_P2P)
-				sys_net.error("Error sendto(result): %d", result);
+				//  sys_net.error("Error sendto(result): %d", result);
 			return -result;
 		}
 
 		if (ppu.gpr[3] == static_cast<u64>(-SYS_NET_EINTR))
 		{
 			if (type == SYS_NET_SOCK_DGRAM_P2P)
-				sys_net.error("Error sendto(interrupted)");
+				//  sys_net.error("Error sendto(interrupted)");
 			return -SYS_NET_EINTR;
 		}
 	}
 
 	// Length
 	if (type == SYS_NET_SOCK_DGRAM_P2P)
-		sys_net.error("Ok sendto: %d", native_result);
+		//  sys_net.error("Ok sendto: %d", native_result);
 
 	return not_an_error(native_result);
 }
@@ -1703,18 +1703,18 @@ error_code sys_net_bnet_setsockopt(ppu_thread& ppu, s32 s, s32 level, s32 optnam
 			case SYS_NET_SO_USECRYPTO:
 			{
 				//TODO
-				sys_net.error("sys_net_bnet_setsockopt(s=%d, SOL_SOCKET): Stubbed option (0x%x) (SYS_NET_SO_USECRYPTO)", s, optname);
+				//  sys_net.error("sys_net_bnet_setsockopt(s=%d, SOL_SOCKET): Stubbed option (0x%x) (SYS_NET_SO_USECRYPTO)", s, optname);
 				return {};
 			}
 			case SYS_NET_SO_USESIGNATURE:
 			{
 				//TODO
-				sys_net.error("sys_net_bnet_setsockopt(s=%d, SOL_SOCKET): Stubbed option (0x%x) (SYS_NET_SO_USESIGNATURE)", s, optname);
+				//  sys_net.error("sys_net_bnet_setsockopt(s=%d, SOL_SOCKET): Stubbed option (0x%x) (SYS_NET_SO_USESIGNATURE)", s, optname);
 				return {};
 			}
 			default:
 			{
-				sys_net.error("sys_net_bnet_setsockopt(s=%d, SOL_SOCKET): unknown option (0x%x)", s, optname);
+				//  sys_net.error("sys_net_bnet_setsockopt(s=%d, SOL_SOCKET): unknown option (0x%x)", s, optname);
 				return SYS_NET_EINVAL;
 			}
 			}
@@ -1738,14 +1738,14 @@ error_code sys_net_bnet_setsockopt(ppu_thread& ppu, s32 s, s32 level, s32 optnam
 			}
 			default:
 			{
-				sys_net.error("sys_net_bnet_setsockopt(s=%d, IPPROTO_TCP): unknown option (0x%x)", s, optname);
+				//  sys_net.error("sys_net_bnet_setsockopt(s=%d, IPPROTO_TCP): unknown option (0x%x)", s, optname);
 				return SYS_NET_EINVAL;
 			}
 			}
 		}
 		else
 		{
-			sys_net.error("sys_net_bnet_setsockopt(s=%d): unknown level (0x%x)", s, level);
+			// sys_net.error("sys_net_bnet_setsockopt(s=%d): unknown level (0x%x)", s, level);
 			return SYS_NET_EINVAL;
 		}
 
@@ -1824,12 +1824,12 @@ error_code sys_net_bnet_socket(ppu_thread& ppu, s32 family, s32 type, s32 protoc
 
 	if (family != SYS_NET_AF_INET && family != SYS_NET_AF_UNSPEC)
 	{
-		sys_net.error("sys_net_bnet_socket(): unknown family (%d)", family);
+		// sys_net.error("sys_net_bnet_socket(): unknown family (%d)", family);
 	}
 
 	if (type != SYS_NET_SOCK_STREAM && type != SYS_NET_SOCK_DGRAM && type != SYS_NET_SOCK_DGRAM_P2P)
 	{
-		sys_net.error("sys_net_bnet_socket(): unsupported type (%d)", type);
+		// sys_net.error("sys_net_bnet_socket(): unsupported type (%d)", type);
 		return -SYS_NET_EPROTONOSUPPORT;
 	}
 
@@ -1897,7 +1897,7 @@ error_code sys_net_bnet_poll(ppu_thread& ppu, vm::ptr<sys_net_pollfd> fds, s32 n
 {
 	ppu.state += cpu_flag::wait;
 
-	sys_net.warning("sys_net_bnet_poll(fds=*0x%x, nfds=%d, ms=%d)", fds, nfds, ms);
+	// sys_net.warning("sys_net_bnet_poll(fds=*0x%x, nfds=%d, ms=%d)", fds, nfds, ms);
 
 	if (nfds <= 0)
 	{
@@ -1941,7 +1941,7 @@ error_code sys_net_bnet_poll(ppu_thread& ppu, vm::ptr<sys_net_pollfd> fds, s32 n
 					fds_buf[i].revents |= SYS_NET_POLLIN;
 
 				if (fds_buf[i].events & ~(SYS_NET_POLLIN | SYS_NET_POLLOUT | SYS_NET_POLLERR))
-					sys_net.error("sys_net_bnet_poll(fd=%d): events=0x%x", fds[i].fd, fds[i].events);
+					// sys_net.error("sys_net_bnet_poll(fd=%d): events=0x%x", fds[i].fd, fds[i].events);
 				_fds[i].fd = sock->socket;
 				if (fds_buf[i].events & SYS_NET_POLLIN)
 					_fds[i].events |= POLLIN;
@@ -2084,7 +2084,7 @@ error_code sys_net_bnet_select(ppu_thread& ppu, s32 nfds, vm::ptr<sys_net_fd_set
 
 	if (exceptfds)
 	{
-		sys_net.error("sys_net_bnet_select(): exceptfds not implemented");
+		// sys_net.error("sys_net_bnet_select(): exceptfds not implemented");
 	}
 
 	sys_net_fd_set rread{}, _readfds{};
