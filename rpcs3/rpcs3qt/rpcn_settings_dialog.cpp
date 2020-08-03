@@ -4,18 +4,22 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QRegExpValidator>
+#include <QInputDialog>
 #include <thread>
 
 #include "rpcn_settings_dialog.h"
 #include "Emu/NP/rpcn_config.h"
 #include "Emu/NP/rpcn_client.h"
 
+#include <wolfssl/ssl.h>
+#include <wolfssl/openssl/evp.h>
+
 rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
     : QDialog(parent)
 {
 	setWindowTitle(tr("RPCN Configuration"));
 	setObjectName("rpcn_settings_dialog");
-	setMinimumSize(QSize(400, 300));
+	setMinimumSize(QSize(400, 200));
 
 	QVBoxLayout* vbox_global           = new QVBoxLayout();
 	QHBoxLayout* hbox_labels_and_edits = new QHBoxLayout();
@@ -25,13 +29,12 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 
 	QLabel* label_host = new QLabel(tr("Host:"));
 	m_edit_host        = new QLineEdit();
-	QLabel* label_npid = new QLabel(tr("NPID(username):"));
+	QLabel* label_npid = new QLabel(tr("NPID (username):"));
 	m_edit_npid        = new QLineEdit();
 	m_edit_npid->setMaxLength(16);
 	m_edit_npid->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9_\\-]*$"), this));
-	QLabel* label_pass = new QLabel(tr("Password:"));
-	m_edit_pass        = new QLineEdit();
-	m_edit_pass->setEchoMode(QLineEdit::Password);
+	QLabel* label_pass        = new QLabel(tr("Password:"));
+	QPushButton* btn_chg_pass = new QPushButton(tr("Set Password"));
 
 	QPushButton* btn_create = new QPushButton(tr("Create Account"), this);
 	QPushButton* btn_ok     = new QPushButton(tr("Ok"), this);
@@ -42,7 +45,7 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 
 	vbox_edits->addWidget(m_edit_host);
 	vbox_edits->addWidget(m_edit_npid);
-	vbox_edits->addWidget(m_edit_pass);
+	vbox_edits->addWidget(btn_chg_pass);
 
 	hbox_buttons->addWidget(btn_create);
 	hbox_buttons->addStretch();
@@ -56,6 +59,46 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 
 	setLayout(vbox_global);
 
+	connect(btn_chg_pass, &QAbstractButton::clicked, [this]()
+	{
+		bool clicked_ok;
+		QString password;
+
+		while(true)
+		{
+			password = QInputDialog::getText(this, "Set/Change Password", "Set your password", QLineEdit::Password, "", &clicked_ok);
+			if (!clicked_ok)
+				return;
+
+			if (password.isEmpty())
+			{
+				QMessageBox::critical(this, tr("Wrong input"), tr("You need to enter a password!"), QMessageBox::Ok);
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		std::string pass_str = password.toStdString();
+		std::string salt_str = "No matter where you go, everybody's connected.";
+
+		u8 salted_pass[SHA_DIGEST_SIZE];
+
+		wolfSSL_PKCS5_PBKDF2_HMAC_SHA1(pass_str.c_str(), pass_str.size(), reinterpret_cast<const u8*>(salt_str.c_str()), salt_str.size(), 1000, SHA_DIGEST_SIZE, salted_pass);
+
+		std::string hash("0000000000000000000000000000000000000000");
+		for (u32 i = 0; i < 20; i++)
+		{
+			constexpr auto pal = "0123456789abcdef";
+			hash[i * 2] = pal[salted_pass[i] >> 4];
+			hash[1 + i * 2] = pal[salted_pass[i] & 15];
+		}
+
+		g_cfg_rpcn.set_password(hash);
+		g_cfg_rpcn.save();
+	});
+
 	connect(btn_ok, &QAbstractButton::clicked, [this]()
 	{
 		if (this->save_config())
@@ -67,14 +110,12 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 
 	m_edit_host->setText(QString::fromStdString(g_cfg_rpcn.get_host()));
 	m_edit_npid->setText(QString::fromStdString(g_cfg_rpcn.get_npid()));
-	m_edit_pass->setText(QString::fromStdString(g_cfg_rpcn.get_password()));
 }
 
 bool rpcn_settings_dialog::save_config()
 {
 	const auto host     = m_edit_host->text().toStdString();
 	const auto npid     = m_edit_npid->text().toStdString();
-	const auto password = m_edit_pass->text().toStdString();
 
 	auto validate = [](const std::string& input) -> bool
 	{
@@ -95,7 +136,7 @@ bool rpcn_settings_dialog::save_config()
 		return false;
 	}
 
-	if (!npid.size() || !password.size())
+	if (!npid.size() || g_cfg_rpcn.get_password() == "")
 	{
 		QMessageBox::critical(this, tr("Wrong input"), tr("You need to enter a username and a password!"), QMessageBox::Ok);
 		return false;
@@ -109,7 +150,6 @@ bool rpcn_settings_dialog::save_config()
 
 	g_cfg_rpcn.set_host(host);
 	g_cfg_rpcn.set_npid(npid);
-	g_cfg_rpcn.set_password(password);
 
 	g_cfg_rpcn.save();
 
@@ -124,11 +164,11 @@ bool rpcn_settings_dialog::create_account()
 
 	const auto rpcn = std::make_shared<rpcn_client>(true);
 
-	const auto host        = g_cfg_rpcn.host.to_string();
-	const auto npid        = g_cfg_rpcn.npid.to_string();
+	const auto host        = g_cfg_rpcn.get_host();
+	const auto npid        = g_cfg_rpcn.get_npid();
 	const auto online_name = npid;
 	const auto avatar_url  = "https://i.imgur.com/AfWIyQP.jpg";
-	const auto password    = g_cfg_rpcn.password.to_string();
+	const auto password    = g_cfg_rpcn.get_password();
 
 	std::thread(
 		[](const std::shared_ptr<rpcn_client> rpcn)
