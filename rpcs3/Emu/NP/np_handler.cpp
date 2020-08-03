@@ -172,6 +172,25 @@ std::string np_handler::ip_to_string(u32 ip_addr)
 	return result;
 }
 
+void np_handler::string_to_npid(const char* str, SceNpId* npid)
+{
+	strncpy(npid->handle.data, str, sizeof(npid->handle.data));
+	npid->handle.term = 0;
+	npid->reserved[0] = 1;
+}
+
+void np_handler::string_to_online_name(const char* str, SceNpOnlineName* online_name)
+{
+	strncpy(online_name->data, str, sizeof(online_name->data));
+	online_name->term = 0;
+}
+
+void np_handler::string_to_avatar_url(const char* str, SceNpAvatarUrl* avatar_url)
+{
+	strncpy(avatar_url->data, str, sizeof(avatar_url->data));
+	avatar_url->term = 0;
+}
+
 void np_handler::init_NP(u32 poolsize, vm::ptr<void> poolptr)
 {
 	// Init memory pool
@@ -187,10 +206,9 @@ void np_handler::init_NP(u32 poolsize, vm::ptr<void> poolptr)
 	if (g_cfg.net.psn_status >= np_psn_status::fake)
 	{
 		std::string s_npid = g_cfg_rpcn.get_npid();
-		ASSERT(s_npid != ""); // It should have been generated before this
+		ASSERT(!s_npid.empty()); // It should have been generated before this
 
-		std::memcpy(npid.handle.data, s_npid.c_str(), std::min(sizeof(npid.handle.data), s_npid.size()));
-		npid.reserved[0] = 1;
+		np_handler::string_to_npid(s_npid.c_str(), &npid);
 	}
 
 	switch (g_cfg.net.psn_status)
@@ -199,8 +217,8 @@ void np_handler::init_NP(u32 poolsize, vm::ptr<void> poolptr)
 		break;
 	case np_psn_status::fake:
 	{
-		std::memcpy(online_name.data, "RPCS3's user", std::min(sizeof(online_name.data), std::string_view("RPCS3's user").size()));
-		std::memcpy(avatar_url.data, "https://i.imgur.com/AfWIyQP.jpg", std::min(sizeof(avatar_url.data), std::string_view("https://i.imgur.com/AfWIyQP.jpg").size()));
+		np_handler::string_to_online_name("RPCS3's user", &online_name);
+		np_handler::string_to_avatar_url("https://rpcs3.net/cdn/netplay/DefaultAvatar.png", &avatar_url);
 		break;
 	}
 	case np_psn_status::rpcn:
@@ -223,9 +241,8 @@ void np_handler::init_NP(u32 poolsize, vm::ptr<void> poolptr)
 			return;
 		}
 
-		strncpy(online_name.data, rpcn.get_online_name().c_str(), sizeof(online_name.data));
-		strncpy(avatar_url.data, rpcn.get_avatar_url().c_str(), sizeof(avatar_url.data));
-
+		np_handler::string_to_online_name(rpcn.get_online_name().c_str(), &online_name);
+		np_handler::string_to_avatar_url(rpcn.get_avatar_url().c_str(), &avatar_url);
 		public_ip_addr = rpcn.get_addr_sig();
 
 		break;
@@ -502,19 +519,17 @@ void np_handler::operator()()
 			const u32 req_id      = reply.first;
 			std::vector<u8>& data = reply.second.second;
 
-			bool res = false;
-
 			switch (command)
 			{
-			case CommandType::GetWorldList: res = reply_get_world_list(req_id, data); break;
-			case CommandType::CreateRoom: res = reply_create_join_room(req_id, data); break;
-			case CommandType::JoinRoom: res = reply_join_room(req_id, data); break;
-			case CommandType::LeaveRoom: res = reply_leave_room(req_id, data); break;
-			case CommandType::SearchRoom: res = reply_search_room(req_id, data); break;
-			case CommandType::SetRoomDataExternal: res = reply_set_roomdata_external(req_id, data); break;
-			case CommandType::GetRoomDataInternal: res = reply_get_roomdata_internal(req_id, data); break;
-			case CommandType::SetRoomDataInternal: res = reply_set_roomdata_internal(req_id, data); break;
-			case CommandType::PingRoomOwner: res = reply_get_ping_info(req_id, data); break;
+			case CommandType::GetWorldList: reply_get_world_list(req_id, data); break;
+			case CommandType::CreateRoom: reply_create_join_room(req_id, data); break;
+			case CommandType::JoinRoom: reply_join_room(req_id, data); break;
+			case CommandType::LeaveRoom: reply_leave_room(req_id, data); break;
+			case CommandType::SearchRoom: reply_search_room(req_id, data); break;
+			case CommandType::SetRoomDataExternal: reply_set_roomdata_external(req_id, data); break;
+			case CommandType::GetRoomDataInternal: reply_get_roomdata_internal(req_id, data); break;
+			case CommandType::SetRoomDataInternal: reply_set_roomdata_internal(req_id, data); break;
+			case CommandType::PingRoomOwner: reply_get_ping_info(req_id, data); break;
 			default: rpcn_log.error("Unknown reply(%d) received!", command); break;
 			}
 		}

@@ -18,7 +18,8 @@ LOG_CHANNEL(sceNp);
 template <>
 void fmt_class_string<SceNpError>::format(std::string& out, u64 arg)
 {
-	format_enum(out, arg, [](auto error) {
+	format_enum(out, arg, [](auto error)
+	{
 		switch (error)
 		{
 			STR_CASE(SCE_NP_ERROR_NOT_INITIALIZED);
@@ -894,7 +895,7 @@ error_code sceNpBasicMarkMessageAsUsed(SceNpBasicMessageId msgId)
 		return SCE_NP_BASIC_ERROR_NOT_INITIALIZED;
 	}
 
-	//	if (!msgId > ?)
+	//if (!msgId > ?)
 	//{
 	//	return SCE_NP_BASIC_ERROR_INVALID_ARGUMENT;
 	//}
@@ -2366,7 +2367,7 @@ error_code sceNpLookupTitleSmallStorage(s32 transId, vm::ptr<void> data, u64 max
 		return SCE_NP_COMMUNITY_ERROR_INVALID_ARGUMENT;
 	}
 
-	//	if (something > maxSize)
+	//if (something > maxSize)
 	//{
 	//	return SCE_NP_COMMUNITY_ERROR_BODY_TOO_LARGE;
 	//}

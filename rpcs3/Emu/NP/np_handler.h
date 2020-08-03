@@ -37,6 +37,10 @@ public:
 
 	// Public helpers
 	static std::string ip_to_string(u32 addr);
+	// Helpers for setting various structures from string
+	static void string_to_npid(const char* str, SceNpId* npid);
+	static void string_to_online_name(const char* str, SceNpOnlineName* online_name);
+	static void string_to_avatar_url(const char* str, SceNpAvatarUrl* avatar_url);
 
 	// DNS hooking functions
 	void add_dns_spy(u32 sock);
@@ -231,7 +235,6 @@ public:
 protected:
 	// Various generic helpers
 	bool discover_ip_address();
-
 	bool error_and_disconnect(const std::string& error_msg);
 
 	// Notification handlers

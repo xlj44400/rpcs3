@@ -606,7 +606,7 @@ error_code sceNpMatching2SignalingGetConnectionInfo(
 	}
 
 	// Hack
-	assert(code == 5);
+	ASSERT(code == 5);
 
 	const auto& infos = nph->get_peer_infos(ctxId, roomId, memberId);
 	connInfo->address.port = infos.port;
@@ -1452,7 +1452,6 @@ error_code sceNpMatching2ContextStop(SceNpMatching2ContextId ctxId)
 			ctx->context_callback(cb_ppu, ctxId, SCE_NP_MATCHING2_CONTEXT_EVENT_Stop, SCE_NP_MATCHING2_EVENT_CAUSE_CONTEXT_ACTION, 0, ctx->context_callback_param);
 			return 0;
 		});
-
 	}
 
 	return CELL_OK;

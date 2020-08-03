@@ -776,8 +776,8 @@ error_code sys_net_bnet_bind(ppu_thread& ppu, s32 s, vm::cptr<sys_net_sockaddr> 
 
 		if (sock.type == SYS_NET_SOCK_DGRAM_P2P)
 		{
-			const u16 p2p_port  = reinterpret_cast<const sys_net_sockaddr_in*>(addr.get_ptr())->sin_port;
-			const u16 p2p_vport = reinterpret_cast<const sys_net_sockaddr_in_p2p*>(addr.get_ptr())->sin_vport;
+			const u16 p2p_port  = reinterpret_cast<const sys_net_sockaddr_in_p2p*>(psa_in)->sin_port;
+			const u16 p2p_vport = reinterpret_cast<const sys_net_sockaddr_in_p2p*>(psa_in)->sin_vport;
 
 			sys_net.notice("[P2P] Socket bind to %s:%d:%d", inet_ntoa(name.sin_addr), p2p_port, p2p_vport);
 

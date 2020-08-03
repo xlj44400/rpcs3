@@ -130,13 +130,13 @@ bool rpcn_settings_dialog::save_config()
 		return true;
 	};
 
-	if (!host.size())
+	if (host.empty())
 	{
 		QMessageBox::critical(this, tr("Missing host"), tr("You need to enter a host for rpcn!"), QMessageBox::Ok);
 		return false;
 	}
 
-	if (!npid.size() || g_cfg_rpcn.get_password() == "")
+	if (npid.empty() || g_cfg_rpcn.get_password().empty())
 	{
 		QMessageBox::critical(this, tr("Wrong input"), tr("You need to enter a username and a password!"), QMessageBox::Ok);
 		return false;
@@ -167,7 +167,7 @@ bool rpcn_settings_dialog::create_account()
 	const auto host        = g_cfg_rpcn.get_host();
 	const auto npid        = g_cfg_rpcn.get_npid();
 	const auto online_name = npid;
-	const auto avatar_url  = "https://i.imgur.com/AfWIyQP.jpg";
+	const auto avatar_url  = "https://rpcs3.net/cdn/netplay/DefaultAvatar.png";
 	const auto password    = g_cfg_rpcn.get_password();
 
 	std::thread(

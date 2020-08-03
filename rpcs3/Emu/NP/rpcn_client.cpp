@@ -475,7 +475,7 @@ bool rpcn_client::manage_connection()
 	case PacketType::Request: return error_and_disconnect("Client shouldn't receive request packets!");
 	case PacketType::Reply:
 	{
-		if (data.size() < 1)
+		if (data.empty())
 			return error_and_disconnect("Reply packet without result");
 
 		// Those commands are handled synchronously and won't be forwarded to NP Handler
