@@ -1,4 +1,6 @@
-﻿#include "Utilities/Config.h"
+﻿#pragma once
+
+#include "Utilities/Config.h"
 
 LOG_CHANNEL(rpcn_cfg, "RPCN Config");
 

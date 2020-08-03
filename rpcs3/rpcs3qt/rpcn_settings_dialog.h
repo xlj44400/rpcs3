@@ -1,4 +1,6 @@
-﻿#include <QDialog>
+﻿#pragma once
+
+#include <QDialog>
 #include <QLineEdit>
 
 class rpcn_settings_dialog : public QDialog

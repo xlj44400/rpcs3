@@ -191,10 +191,11 @@ protected:
 		recvn_success,
 		recvn_nodata,
 		recvn_timeout,
+		recvn_noconn,
 		recvn_fatal,
 	};
 
-	recvn_result recvn(u8* buf, size_t n, bool blocking = true);
+	recvn_result recvn(u8* buf, std::size_t n);
 
 	bool get_reply(u32 expected_id, std::vector<u8>& data);
 
@@ -206,6 +207,8 @@ protected:
 	bool is_error(ErrorType err) const;
 	bool error_and_disconnect(const std::string& error_mgs);
 	bool is_abort();
+
+	std::string get_wolfssl_error(int error);
 
 protected:
 	atomic_t<bool> connected    = false;
