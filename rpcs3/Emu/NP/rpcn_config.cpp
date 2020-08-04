@@ -4,9 +4,12 @@
 
 cfg_rpcn g_cfg_rpcn;
 
+LOG_CHANNEL(rpcn_cfg_log, "rpcn config");
+
 void cfg_rpcn::load()
 {
-	if (fs::file cfg_file{cfg_rpcn::get_path(), fs::read})
+	fs::file cfg_file(cfg_rpcn::get_path(), fs::read);
+	if (cfg_file)
 	{
 		from_string(cfg_file.to_string());
 	}
@@ -14,7 +17,23 @@ void cfg_rpcn::load()
 
 void cfg_rpcn::save() const
 {
-	fs::file(cfg_rpcn::get_path(), fs::rewrite).write(to_string());
+#ifdef _WIN32
+	const std::string path_to_cfg = fs::get_config_dir() + "config/";
+	if (!fs::create_path(path_to_cfg))
+	{
+		rpcn_cfg_log.error("Could not create path: %s", path_to_cfg);
+	}
+#endif
+
+	fs::file cfg_file(cfg_rpcn::get_path(), fs::rewrite);
+	if (cfg_file)
+	{
+		cfg_file.write(to_string());	
+	}
+	else
+	{
+		rpcn_cfg_log.error("Could not save config: %s", cfg_rpcn::get_path());
+	}
 }
 
 std::string cfg_rpcn::get_path()
