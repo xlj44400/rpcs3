@@ -64,7 +64,7 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 		bool clicked_ok;
 		QString password;
 
-		while(true)
+		while (true)
 		{
 			password = QInputDialog::getText(this, "Set/Change Password", "Set your password", QLineEdit::Password, "", &clicked_ok);
 			if (!clicked_ok)

@@ -19,7 +19,11 @@ void cfg_rpcn::save() const
 
 std::string cfg_rpcn::get_path()
 {
+#ifdef _WIN32
+	return fs::get_config_dir() + "config/rpcn.yml";
+#else
 	return fs::get_config_dir() + "rpcn.yml";
+#endif
 }
 
 std::string cfg_rpcn::generate_npid()

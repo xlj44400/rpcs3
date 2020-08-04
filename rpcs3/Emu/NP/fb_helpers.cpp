@@ -73,12 +73,13 @@ void np_handler::SearchRoomReponse_to_SceNpMatching2SearchRoomResponse(const Sea
 			{
 				vm::ptr<SceNpMatching2RoomDataExternal> prev_room(previous_next);
 				prev_room->next.set(room_info.addr());
-				previous_next = vm::cast(room_info.addr());
 			}
 			else
 			{
 				search_resp->roomDataExternal = room_info;
 			}
+			
+			previous_next = vm::cast(room_info.addr());
 
 			room_info->serverId           = room->serverId();
 			room_info->worldId            = room->worldId();

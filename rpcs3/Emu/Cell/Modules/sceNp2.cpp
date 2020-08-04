@@ -605,12 +605,36 @@ error_code sceNpMatching2SignalingGetConnectionInfo(
 		return SCE_NP_MATCHING2_ERROR_NOT_INITIALIZED;
 	}
 
-	// Hack
-	ASSERT(code == 5);
-
-	const auto& infos = nph->get_peer_infos(ctxId, roomId, memberId);
-	connInfo->address.port = infos.port;
-	connInfo->address.addr.np_s_addr = infos.addr;
+	switch (code)
+	{
+		case 1:
+		{
+			connInfo->rtt = 20000; // HACK
+			break;
+		}
+		case 2:
+		{
+			connInfo->bandwidth = 10'000'000; // 10 MBPS HACK
+			break;
+		}
+		case 5:
+		{
+			const auto& infos = nph->get_peer_infos(ctxId, roomId, memberId);
+			connInfo->address.port = infos.port;
+			connInfo->address.addr.np_s_addr = infos.addr;
+			break;
+		}
+		case 6:
+		{
+			connInfo->packet_loss = 1; // HACK
+			break;
+		}
+		default:
+		{
+			sceNp2.fatal("sceNpMatching2SignalingGetConnectionInfo Unimplemented code: %d", code);
+			return CELL_OK;
+		}
+	}
 
 	return CELL_OK;
 }
