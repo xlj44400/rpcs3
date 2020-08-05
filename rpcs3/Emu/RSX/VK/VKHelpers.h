@@ -1855,7 +1855,7 @@ private:
 		event(const render_device& dev)
 		{
 			m_device = dev;
-			if (dev.gpu().get_driver_vendor() != driver_vendor::AMD)
+			if (false)
 			{
 				VkEventCreateInfo info
 				{
