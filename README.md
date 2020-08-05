@@ -5,7 +5,14 @@ Rebase of [rajkosto's mgs4 branch](https://github.com/rajkosto/rpcs3/tree/cab176
 [![Build Status](https://dev.azure.com/illusion9804/rpcs3/_apis/build/status/illusion0001.rpcs3?branchName=mgs4-new)](https://dev.azure.com/illusion9804/rpcs3/_build/latest?definitionId=3&branchName=mgs4-new)
 
 <details> 
-<summary>How to download build (Click to expand)</summary>
+<summary>How to download build (GIF) (Click to expand)</summary>
+
+![](https://cdn.discordapp.com/attachments/644808568561729550/740644199673757886/ugh.gif)
+
+</details>
+
+<details> 
+<summary>How to download build (image) (Click to expand)</summary>
 
 ![](https://cdn.discordapp.com/attachments/644808568561729550/740125930420437012/unknown.png)
 
