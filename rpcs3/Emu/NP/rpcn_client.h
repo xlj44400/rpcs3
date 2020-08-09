@@ -108,6 +108,7 @@ enum CommandType : u16
 	Login,
 	Terminate,
 	Create,
+	SendToken,
 	GetServerList,
 	GetWorldList,
 	CreateRoom,
@@ -135,8 +136,10 @@ class rpcn_client
 		NoError,
 		Malformed,
 		Invalid,
+		InvalidInput,
 		ErrorLogin,
 		ErrorCreate,
+		AlreadyLoggedIn,
 		DbFail,
 		NotFound,
 		__error_last
@@ -147,8 +150,8 @@ public:
 	~rpcn_client();
 
 	bool connect(const std::string& host);
-	bool login(const std::string& npid, const std::string& password);
-	bool create_user(const std::string& npid, const std::string& password, const std::string& online_name, const std::string& avatar_url);
+	bool login(const std::string& npid, const std::string& password, const std::string& token);
+	bool create_user(const std::string& npid, const std::string& password, const std::string& online_name, const std::string& avatar_url, const std::string& email);
 	void disconnect();
 	bool manage_connection();
 	std::vector<std::pair<u16, std::vector<u8>>> get_notifications();

@@ -234,7 +234,7 @@ void np_handler::init_NP(u32 poolsize, vm::ptr<void> poolptr)
 			return;
 		}
 
-		if (!rpcn.login(g_cfg_rpcn.get_npid(), g_cfg_rpcn.get_password()))
+		if (!rpcn.login(g_cfg_rpcn.get_npid(), g_cfg_rpcn.get_password(), g_cfg_rpcn.get_token()))
 		{
 			rpcn_log.error("RPCN login attempt failed!");
 			is_psn_active = false;

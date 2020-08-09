@@ -84,6 +84,11 @@ std::string cfg_rpcn::get_password() const
 	return password.to_string();
 }
 
+std::string cfg_rpcn::get_token() const
+{
+	return token.to_string();
+}
+
 void cfg_rpcn::set_host(const std::string& host)
 {
 	this->host.from_string(host);
@@ -97,4 +102,9 @@ void cfg_rpcn::set_npid(const std::string& npid)
 void cfg_rpcn::set_password(const std::string& password)
 {
 	this->password.from_string(password);
+}
+
+void cfg_rpcn::set_token(const std::string& token)
+{
+	this->token.from_string(token);
 }

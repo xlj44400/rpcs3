@@ -14,7 +14,7 @@ public:
 	bool create_account();
 
 protected:
-	QLineEdit *m_edit_host, *m_edit_npid;
+	QLineEdit *m_edit_host, *m_edit_npid, *m_edit_token;
 
 	std::string generate_npid();
 };

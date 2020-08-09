@@ -35,6 +35,8 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 	m_edit_npid->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9_\\-]*$"), this));
 	QLabel* label_pass        = new QLabel(tr("Password:"));
 	QPushButton* btn_chg_pass = new QPushButton(tr("Set Password"));
+	QLabel *label_token       = new QLabel(tr("Token:"));
+	m_edit_token              = new QLineEdit();
 
 	QPushButton* btn_create = new QPushButton(tr("Create Account"), this);
 	QPushButton* btn_ok     = new QPushButton(tr("Ok"), this);
@@ -42,10 +44,12 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 	vbox_labels->addWidget(label_host);
 	vbox_labels->addWidget(label_npid);
 	vbox_labels->addWidget(label_pass);
+	vbox_labels->addWidget(label_token);
 
 	vbox_edits->addWidget(m_edit_host);
 	vbox_edits->addWidget(m_edit_npid);
 	vbox_edits->addWidget(btn_chg_pass);
+	vbox_edits->addWidget(m_edit_token);
 
 	hbox_buttons->addWidget(btn_create);
 	hbox_buttons->addStretch();
@@ -61,11 +65,11 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 
 	connect(btn_chg_pass, &QAbstractButton::clicked, [this]()
 	{
-		bool clicked_ok;
 		QString password;
 
 		while (true)
 		{
+			bool clicked_ok = false;
 			password = QInputDialog::getText(this, "Set/Change Password", "Set your password", QLineEdit::Password, "", &clicked_ok);
 			if (!clicked_ok)
 				return;
@@ -110,12 +114,14 @@ rpcn_settings_dialog::rpcn_settings_dialog(QWidget* parent)
 
 	m_edit_host->setText(QString::fromStdString(g_cfg_rpcn.get_host()));
 	m_edit_npid->setText(QString::fromStdString(g_cfg_rpcn.get_npid()));
+	m_edit_token->setText(QString::fromStdString(g_cfg_rpcn.get_token()));
 }
 
 bool rpcn_settings_dialog::save_config()
 {
-	const auto host     = m_edit_host->text().toStdString();
-	const auto npid     = m_edit_npid->text().toStdString();
+	const auto host  = m_edit_host->text().toStdString();
+	const auto npid  = m_edit_npid->text().toStdString();
+	const auto token = m_edit_token->text().toStdString();
 
 	auto validate = [](const std::string& input) -> bool
 	{
@@ -150,6 +156,7 @@ bool rpcn_settings_dialog::save_config()
 
 	g_cfg_rpcn.set_host(host);
 	g_cfg_rpcn.set_npid(npid);
+	g_cfg_rpcn.set_token(token);
 
 	g_cfg_rpcn.save();
 
@@ -161,6 +168,27 @@ bool rpcn_settings_dialog::create_account()
 	// Validate and save
 	if (!save_config())
 		return false;
+
+	QString email;
+	QRegExpValidator simple_email_validator(QRegExp("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$"));
+
+	while (true)
+	{
+		bool clicked_ok = false;
+		email = QInputDialog::getText(this, "Email address", "An email address is required, please note:\n*A valid email is needed to validate your account.\n*Your email won't be used for anything beyond sending you the token.\n*Upon successful creation a token will be sent to your email which you'll need to login.\n\n", QLineEdit::Normal, "", &clicked_ok);
+		if (!clicked_ok)
+			return false;
+
+		int pos = 0;
+		if (email.isEmpty() || simple_email_validator.validate(email, pos) != QValidator::Acceptable)
+		{
+			QMessageBox::critical(this, tr("Wrong input"), tr("You need to enter a valid email!"), QMessageBox::Ok);
+		}
+		else
+		{
+			break;
+		}
+	}
 
 	const auto rpcn = std::make_shared<rpcn_client>(true);
 
@@ -188,9 +216,9 @@ bool rpcn_settings_dialog::create_account()
 		return false;
 	}
 
-	if (!rpcn->create_user(npid, password, online_name, avatar_url))
+	if (!rpcn->create_user(npid, password, online_name, avatar_url, email.toStdString()))
 	{
-		QMessageBox::critical(this, tr("Error Creating Account"), tr("Failed to create the account (username exists?)"), QMessageBox::Ok);
+		QMessageBox::critical(this, tr("Error Creating Account"), tr("Failed to create the account"), QMessageBox::Ok);
 		rpcn->abort();
 		return false;
 	}

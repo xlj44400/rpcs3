@@ -33,7 +33,7 @@
 
 LOG_CHANNEL(rpcn_log, "rpcn");
 
-#define RPCN_PROTOCOL_VERSION 5
+#define RPCN_PROTOCOL_VERSION 6
 #define RPCN_HEADER_SIZE 9
 
 rpcn_client::rpcn_client(bool in_config)
@@ -310,12 +310,14 @@ bool rpcn_client::connect(const std::string& host)
 	return true;
 }
 
-bool rpcn_client::login(const std::string& npid, const std::string& password)
+bool rpcn_client::login(const std::string& npid, const std::string& password, const std::string& token)
 {
 	std::vector<u8> data{};
 	std::copy(npid.begin(), npid.end(), std::back_inserter(data));
 	data.push_back(0);
 	std::copy(password.begin(), password.end(), std::back_inserter(data));
+	data.push_back(0);
+	std::copy(token.begin(), token.end(), std::back_inserter(data));
 	data.push_back(0);
 	const auto sent_packet = forge_request(CommandType::Login, 1, data);
 	if (!send_packet(sent_packet))
@@ -360,7 +362,7 @@ bool rpcn_client::login(const std::string& npid, const std::string& password)
 	return true;
 }
 
-bool rpcn_client::create_user(const std::string& npid, const std::string& password, const std::string& online_name, const std::string& avatar_url)
+bool rpcn_client::create_user(const std::string& npid, const std::string& password, const std::string& online_name, const std::string& avatar_url, const std::string& email)
 {
 	std::vector<u8> data{};
 	std::copy(npid.begin(), npid.end(), std::back_inserter(data));
@@ -370,6 +372,8 @@ bool rpcn_client::create_user(const std::string& npid, const std::string& passwo
 	std::copy(online_name.begin(), online_name.end(), std::back_inserter(data));
 	data.push_back(0);
 	std::copy(avatar_url.begin(), avatar_url.end(), std::back_inserter(data));
+	data.push_back(0);
+	std::copy(email.begin(), email.end(), std::back_inserter(data));
 	data.push_back(0);
 	const auto sent_packet = forge_request(CommandType::Create, 1, data);
 	if (!send_packet(sent_packet))
@@ -1035,8 +1039,10 @@ bool rpcn_client::is_error(ErrorType err) const
 	case NoError: return false;
 	case Malformed: rpcn_log.error("Sent packet was malformed!"); break;
 	case Invalid: rpcn_log.error("Sent command was invalid!"); break;
-	case ErrorLogin: rpcn_log.error("Sent password was incorrect!"); break;
+	case InvalidInput: rpcn_log.error("Sent data was invalid!"); break;
+	case ErrorLogin: rpcn_log.error("Sent password/token was incorrect!"); break;
 	case ErrorCreate: rpcn_log.error("Error creating an account!"); break;
+	case AlreadyLoggedIn: rpcn_log.error("User is already logged in!"); break;
 	case DbFail: rpcn_log.error("A db query failed on the server!"); break;
 	case NotFound: rpcn_log.error("A request replied not found!"); return false;
 	default: rpcn_log.fatal("Unhandled ErrorType reached the switch?"); break;
