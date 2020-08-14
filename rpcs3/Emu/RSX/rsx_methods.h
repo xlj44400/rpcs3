@@ -409,7 +409,7 @@ namespace rsx
 				vertex_counter += count;
 			}
 
-			verify(HERE), !ret.empty(), previous_barrier < limit;
+			// verify(HERE), !ret.empty(), previous_barrier < limit;
 			ret.push_back({ 0, vertex_counter, limit - previous_barrier });
 
 			return ret;
