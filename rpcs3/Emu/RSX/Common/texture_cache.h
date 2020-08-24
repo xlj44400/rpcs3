@@ -1774,7 +1774,7 @@ namespace rsx
 				}
 				else
 				{
-					rsx_log.error("Unimplemented unnormalized sampling for texture type %d", static_cast<u32>(extended_dimension));
+					// rsx_log.error("Unimplemented unnormalized sampling for texture type %d", static_cast<u32>(extended_dimension));
 				}
 			}
 
