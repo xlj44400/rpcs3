@@ -239,7 +239,7 @@ namespace gl
 				}
 				else
 				{
-					rsx_log.error("Memory transfer failed with error 0x%x. Format=0x%x, Type=0x%x", error, static_cast<u32>(format), static_cast<u32>(type));
+					// rsx_log.error("Memory transfer failed with error 0x%x. Format=0x%x, Type=0x%x", error, static_cast<u32>(format), static_cast<u32>(type));
 				}
 			}
 
@@ -327,7 +327,7 @@ namespace gl
 
 			m_fence.wait_for_signal();
 
-			verify(HERE), (offset + size) <= pbo.size();
+			// verify(HERE), (offset + size) <= pbo.size();
 			pbo.bind(buffer::target::pixel_pack);
 
 			return glMapBufferRange(GL_PIXEL_PACK_BUFFER, offset, size, GL_MAP_READ_BIT);

@@ -1502,7 +1502,7 @@ namespace gl
 				{
 					if (m_aspect_flags != image_aspect::color)
 					{
-						rsx_log.error("Undefined format class for depth texture is not allowed");
+						// rsx_log.error("Undefined format class for depth texture is not allowed");
 					}
 					else
 					{
