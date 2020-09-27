@@ -65,7 +65,7 @@ void breakpoint_list::AddBreakpoint(u32 pc, bs_t<breakpoint_type> type)
 	const auto cpu = this->cpu.lock();
 	const auto cpu_offset = cpu->id_type() == 2 ? static_cast<spu_thread&>(*cpu).ls : vm::g_sudo_addr;
 	m_disasm->offset = cpu_offset;
-	
+
 	QString breakpointItemText;
 
 	if (type == breakpoint_type::bp_execute)

@@ -10,6 +10,8 @@
 #include <QComboBox>
 #include <QPushButton>
 
+#include "breakpoint_handler.h"
+
 class CPUDisAsm;
 class cpu_thread;
 class breakpoint_handler;
