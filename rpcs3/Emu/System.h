@@ -185,6 +185,7 @@ public:
 
 	std::string PPUCache() const;
 
+	game_boot_result BootGameFromPath(const std::string& path, bool direct = false, bool add_only = false, bool force_global_config = false);
 	game_boot_result BootGame(const std::string& path, const std::string& title_id = "", bool direct = false, bool add_only = false, bool force_global_config = false);
 	bool BootRsxCapture(const std::string& path);
 	bool InstallPkg(const std::string& path);

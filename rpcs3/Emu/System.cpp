@@ -645,6 +645,11 @@ void Emulator::LimitCacheSize()
 	sys_log.success("Cleaned disk cache, removed %.2f MB", size / 1024.0 / 1024.0);
 }
 
+game_boot_result Emulator::BootGameFromPath(const std::string& path, bool direct, bool add_only, bool force_global_config)
+{
+	return BootGame(std::move(path), "", direct, add_only, force_global_config);
+}
+
 game_boot_result Emulator::BootGame(const std::string& path, const std::string& title_id, bool direct, bool add_only, bool force_global_config)
 {
 	if (g_cfg.vfs.limit_cache_size)
