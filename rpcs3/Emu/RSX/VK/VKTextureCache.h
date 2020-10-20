@@ -464,6 +464,11 @@ namespace vk
 			pack_unpack_swap_bytes = swap_bytes;
 		}
 
+		void sync_surface_memory()
+		{
+			vk::as_rtt(vram_texture)->sync_tag();
+		}
+
 		bool is_synchronized() const
 		{
 			return synchronized;
