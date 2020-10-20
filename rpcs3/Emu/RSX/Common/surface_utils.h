@@ -502,6 +502,44 @@ namespace rsx
 			}
 		}
 
+		template <typename T>
+		bool inherit_surface_contents(T* other)
+		{
+			const auto child_w = get_surface_width(rsx::surface_metrics::bytes);
+			const auto child_h = get_surface_height(rsx::surface_metrics::bytes);
+
+			const auto parent_w = other->get_surface_width(rsx::surface_metrics::bytes);
+			const auto parent_h = other->get_surface_height(rsx::surface_metrics::bytes);
+			const auto rect = rsx::intersect_region(base_addr, parent_w, parent_h, 1, other->base_addr, child_w, child_h, 1, rsx_pitch);
+
+			const auto src_offset = std::get<0>(rect);
+			const auto dst_offset = std::get<1>(rect);
+			const auto size = std::get<2>(rect);
+
+			if (src_offset.x >= parent_w || src_offset.y >= parent_h)
+			{
+				return false;
+			}
+
+			if (dst_offset.x >= child_w || dst_offset.y >= child_h)
+			{
+				return false;
+			}
+
+			deferred_clipped_region<T> region;
+			region.src_x = src_offset.x;
+			region.src_y = src_offset.y;
+			region.dst_x = dst_offset.x;
+			region.dst_y = dst_offset.y;
+			region.width = size.width;
+			region.height = size.height;
+			region.source = other;
+			region.target = this;
+
+			set_old_contents_region(region, true);
+			return true;
+		}
+
 		void on_write(u64 write_tag = 0,
 			rsx::surface_state_flags resolve_flags = surface_state_flags::require_resolve,
 			surface_raster_type type = rsx::surface_raster_type::undefined)
