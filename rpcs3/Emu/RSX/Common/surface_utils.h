@@ -503,7 +503,7 @@ namespace rsx
 		}
 
 		template <typename T>
-		bool inherit_surface_contents(T* other)
+		std::pair<bool, bool> inherit_surface_contents(T* other)
 		{
 			const auto child_w = get_surface_width(rsx::surface_metrics::bytes);
 			const auto child_h = get_surface_height(rsx::surface_metrics::bytes);
@@ -518,15 +518,15 @@ namespace rsx
 
 			if (src_offset.x >= parent_w || src_offset.y >= parent_h)
 			{
-				return false;
+				return {};
 			}
 
 			if (dst_offset.x >= child_w || dst_offset.y >= child_h)
 			{
-				return false;
+				return {};
 			}
 
-			deferred_clipped_region<T> region;
+			deferred_clipped_region<T*> region;
 			region.src_x = src_offset.x;
 			region.src_y = src_offset.y;
 			region.dst_x = dst_offset.x;
@@ -534,10 +534,10 @@ namespace rsx
 			region.width = size.width;
 			region.height = size.height;
 			region.source = other;
-			region.target = this;
+			region.target = static_cast<T*>(this);
 
 			set_old_contents_region(region, true);
-			return true;
+			return { true, (region.width == parent_w && region.height == parent_h) };
 		}
 
 		void on_write(u64 write_tag = 0,

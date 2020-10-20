@@ -359,14 +359,14 @@ namespace rsx
 					verify(HERE), this_address;
 				}
 
-				if (!new_surface->inherit_surface_contents(surface))
+				auto [success, whole_area_consumed] = new_surface->inherit_surface_contents(surface);
+				if (!success)
 				{
 					continue;
 				}
 
 				if (surface->memory_usage_flags == surface_usage_flags::storage &&
-					region.width == parent_w &&
-					region.height == parent_h &&
+					whole_area_consumed &&
 					surface != prev_surface &&
 					surface == e.second)
 				{
@@ -374,7 +374,7 @@ namespace rsx
 					auto &storage = surface->is_depth_surface() ? m_depth_stencil_storage : m_render_targets_storage;
 					auto &object = storage[e.first];
 
-					verify(HERE), !src_offset.x, !src_offset.y, object;
+					verify(HERE), object;
 					if (!surface->old_contents.empty()) [[unlikely]]
 					{
 						surface->read_barrier(cmd);

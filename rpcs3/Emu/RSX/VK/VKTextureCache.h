@@ -464,9 +464,15 @@ namespace vk
 			pack_unpack_swap_bytes = swap_bytes;
 		}
 
-		void sync_surface_memory()
+		void sync_surface_memory(const std::vector<cached_texture_section*>& surfaces)
 		{
-			vk::as_rtt(vram_texture)->sync_tag();
+			auto rtt = vk::as_rtt(vram_texture);
+			rtt->sync_tag();
+
+			for (auto& surface : surfaces)
+			{
+				rtt->inherit_surface_contents(vk::as_rtt(surface->vram_texture));
+			}
 		}
 
 		bool is_synchronized() const
