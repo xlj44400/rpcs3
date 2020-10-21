@@ -488,6 +488,7 @@ namespace vk
 			unsigned first = prepare_rw_barrier_for_transfer(this);
 			bool optimize_copy = true;
 			bool any_valid_writes = false;
+			bool accept_all = (last_use_tag && test());
 			u64  newest_tag = 0;
 
 			for (auto i = first; i < old_contents.size(); ++i)
@@ -496,12 +497,14 @@ namespace vk
 				auto src_texture = static_cast<vk::render_target*>(section.source);
 				src_texture->read_barrier(cmd);
 
-				if (src_texture->test()) [[likely]]
+				if (accept_all || src_texture->test()) [[likely]]
 				{
+					// If this surface is intact, accept all incoming data as it is guaranteed to be safe
 					any_valid_writes = true;
 				}
 				else
 				{
+					// If this surface has not been initialized or is dirty, do not add more dirty data to it
 					continue;
 				}
 
@@ -566,27 +569,12 @@ namespace vk
 
 			if (!any_valid_writes) [[unlikely]]
 			{
-				// This typically happens because of enabling WCB without WDB and vice versa
+				// Underlying memory has been modified and we could not find valid data to fill it
 				clear_rw_barrier();
 
-				if (g_cfg.video.write_color_buffers.get() != g_cfg.video.write_depth_buffer.get()) [[likely]]
-				{
-					rsx_log.warning("Surface at 0x%x inherited stale references", base_addr);
-				}
-				else
-				{
-					rsx_log.error("Surface at 0x%x inherited stale references", base_addr);
-					shuffle_tag();
-				}
-
-				if (!read_access)
-				{
-					// This will be modified either way
-					state_flags |= rsx::surface_state_flags::erase_bkgnd;
-					memory_barrier(cmd, access);
-				}
-
-				return;
+				state_flags |= rsx::surface_state_flags::erase_bkgnd;
+				initialize_memory(cmd, read_access);
+				verify(HERE), state_flags == rsx::surface_state_flags::ready;
 			}
 
 			// NOTE: Optimize flag relates to stencil resolve/unresolve for NVIDIA.
