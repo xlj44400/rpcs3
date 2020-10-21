@@ -485,7 +485,7 @@ namespace rsx
 			{
 				if (surface->get_context() == texture_upload_context::framebuffer_storage)
 				{
-					surface->sync_surface_memory(cmd, {});
+					surface->sync_surface_memory({});
 				}
 			}
 
@@ -514,7 +514,7 @@ namespace rsx
 					surfaces_to_inherit.push_back(flushed_surface);
 				}
 
-				surface->sync_surface_memory(cmd, surfaces_to_inherit);
+				surface->sync_surface_memory(surfaces_to_inherit);
 			}
 
 			data.flushed = true;

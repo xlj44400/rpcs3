@@ -435,7 +435,7 @@ namespace gl
 			baseclass::on_section_resources_destroyed();
 		}
 
-		void sync_surface_memory(gl::command_context& cmd, const std::vector<cached_texture_section*>& surfaces)
+		void sync_surface_memory(const std::vector<cached_texture_section*>& surfaces)
 		{
 			auto rtt = gl::as_rtt(vram_texture);
 			rtt->sync_tag();
@@ -464,12 +464,6 @@ namespace gl
 
 					rtt->inherit_surface_contents(src_rtt);
 				}
-			}
-
-			// Consume memory that is soon to be destroyed/trampled
-			if (!rtt->old_contents.empty() && !surfaces.empty())
-			{
-				rtt->read_barrier(cmd);
 			}
 		}
 

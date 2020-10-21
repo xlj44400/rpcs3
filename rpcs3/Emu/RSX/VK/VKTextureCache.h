@@ -458,7 +458,7 @@ namespace vk
 			pack_unpack_swap_bytes = swap_bytes;
 		}
 
-		void sync_surface_memory(vk::command_buffer& cmd, const std::vector<cached_texture_section*>& surfaces)
+		void sync_surface_memory(const std::vector<cached_texture_section*>& surfaces)
 		{
 			auto rtt = vk::as_rtt(vram_texture);
 			rtt->sync_tag();
@@ -487,12 +487,6 @@ namespace vk
 
 					rtt->inherit_surface_contents(src_rtt);
 				}
-			}
-
-			// Consume memory that is soon to be destroyed/trampled
-			if (!rtt->old_contents.empty() && !surfaces.empty())
-			{
-				rtt->read_barrier(cmd);
 			}
 		}
 
