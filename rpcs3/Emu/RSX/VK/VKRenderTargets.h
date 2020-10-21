@@ -566,10 +566,18 @@ namespace vk
 
 			if (!any_valid_writes) [[unlikely]]
 			{
-				rsx_log.warning("Surface at 0x%x inherited stale references", base_addr);
-
+				// This typically happens because of enabling WCB without WDB and vice versa
 				clear_rw_barrier();
-				shuffle_tag();
+
+				if (g_cfg.video.write_color_buffers.get() != g_cfg.video.write_depth_buffer.get()) [[likely]]
+				{
+					rsx_log.warning("Surface at 0x%x inherited stale references", base_addr);
+				}
+				else
+				{
+					rsx_log.error("Surface at 0x%x inherited stale references", base_addr);
+					shuffle_tag();
+				}
 
 				if (!read_access)
 				{
