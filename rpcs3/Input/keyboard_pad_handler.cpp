@@ -134,27 +134,6 @@ void keyboard_pad_handler::Key(const u32 code, bool pressed, u16 value)
 	}
 }
 
-void keyboard_pad_handler::release_all_keys()
-{
-	for (auto& pad : m_pads_internal)
-	{
-		for (Button& button : pad.m_buttons)
-		{
-			button.m_pressed = false;
-			button.m_value = 0;
-			button.m_actual_value = 0;
-		}
-
-		for (usz i = 0; i < pad.m_sticks.size(); i++)
-		{
-			m_stick_min[i] = 0;
-			m_stick_max[i] = 128;
-			m_stick_val[i] = 128;
-			pad.m_sticks[i].m_value = 128;
-		}
-	}
-}
-
 bool keyboard_pad_handler::eventFilter(QObject* target, QEvent* ev)
 {
 	// !m_target is for future proofing when gsrender isn't automatically initialized on load.
@@ -180,9 +159,6 @@ bool keyboard_pad_handler::eventFilter(QObject* target, QEvent* ev)
 			break;
 		case QEvent::Wheel:
 			mouseWheelEvent(static_cast<QWheelEvent*>(ev));
-			break;
-		case QEvent::FocusOut:
-			release_all_keys();
 			break;
 		default:
 			break;
@@ -251,9 +227,6 @@ void keyboard_pad_handler::processKeyEvent(QKeyEvent* event, bool pressed)
 	case Qt::Key_F12:
 		break;
 	case Qt::Key_L:
-		if (event->modifiers() != Qt::AltModifier && event->modifiers() != Qt::ControlModifier)
-			handle_key();
-		break;
 	case Qt::Key_Return:
 		if (event->modifiers() != Qt::AltModifier)
 			handle_key();
@@ -359,6 +332,8 @@ void keyboard_pad_handler::mouseMoveEvent(QMouseEvent* event)
 
 	static int movement_x = 0;
 	static int movement_y = 0;
+	static int last_pos_x = 0;
+	static int last_pos_y = 0;
 
 	if (m_target && m_target->isActive() && get_mouse_lock_state())
 	{
@@ -382,9 +357,6 @@ void keyboard_pad_handler::mouseMoveEvent(QMouseEvent* event)
 	}
 	else
 	{
-		static int last_pos_x = 0;
-		static int last_pos_y = 0;
-
 		movement_x = event->x() - last_pos_x;
 		movement_y = event->y() - last_pos_y;
 
@@ -623,15 +595,15 @@ u32 keyboard_pad_handler::GetKeyCode(const QString& keyName)
 		return Qt::NoButton;
 	if (const int native_scan_code = native_scan_code_from_string(sstr(keyName)); native_scan_code >= 0)
 		return Qt::Key_unknown + native_scan_code; // Special cases that can't be expressed with Qt::Key
-	if (keyName == "Alt")
+	else if (keyName == "Alt")
 		return Qt::Key_Alt;
-	if (keyName == "AltGr")
+	else if (keyName == "AltGr")
 		return Qt::Key_AltGr;
-	if (keyName == "Shift")
+	else if (keyName == "Shift")
 		return Qt::Key_Shift;
-	if (keyName == "Ctrl")
+	else if (keyName == "Ctrl")
 		return Qt::Key_Control;
-	if (keyName == "Meta")
+	else if (keyName == "Meta")
 		return Qt::Key_Meta;
 
 	const QKeySequence seq(keyName);
@@ -651,11 +623,11 @@ int keyboard_pad_handler::native_scan_code_from_string([[maybe_unused]] const st
 #ifdef _WIN32
 	if (key == "Shift Left")
 		return 42;
-	if (key == "Shift Right")
+	else if (key == "Shift Right")
 		return 54;
-	if (key == "Ctrl Left")
+	else if (key == "Ctrl Left")
 		return 29;
-	if (key == "Ctrl Right")
+	else if (key == "Ctrl Right")
 		return 285;
 #else
 		// TODO
