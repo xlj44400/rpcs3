@@ -254,7 +254,7 @@ static sys_net_error get_last_error(bool is_blocking, int native_error = 0)
 
 	if (name && result != SYS_NET_EWOULDBLOCK && result != SYS_NET_EINPROGRESS)
 	{
-		sys_net.error("Socket error %s", name);
+		sys_net.notice("Socket error %s", name);
 	}
 
 	if (is_blocking && result == SYS_NET_EWOULDBLOCK)
@@ -3444,7 +3444,7 @@ error_code sys_net_bnet_select(ppu_thread& ppu, s32 nfds, vm::ptr<sys_net_fd_set
 
 	if (exceptfds)
 	{
-		sys_net.error("sys_net_bnet_select(): exceptfds not implemented");
+		sys_net.notice("sys_net_bnet_select(): exceptfds not implemented");
 	}
 
 	sys_net_fd_set rread{}, _readfds{};
