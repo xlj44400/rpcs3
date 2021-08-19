@@ -77,6 +77,8 @@ public:
 		// Redundant information for accessibility (see patch_container)
 		std::string hash{};
 		std::string version{};
+		bool is_legacy = false;
+		bool is_enabled = false; // only for legacy patches
 	};
 
 	struct patch_container
@@ -84,6 +86,7 @@ public:
 		std::unordered_map<std::string /*description*/, patch_info> patch_info_map{};
 		std::string hash{};
 		std::string version{};
+		bool is_legacy = false;
 	};
 
 	enum mem_protection : u8
@@ -125,7 +128,7 @@ public:
 	static bool add_patch_data(YAML::Node node, patch_info& info, u32 modifier, const YAML::Node& root, std::stringstream* log_messages = nullptr);
 
 	// Save to patch_config.yml
-	static void save_config(const patch_map& patches_map);
+	static void save_config(const patch_map& patches_map, bool enable_legacy_patches);
 
 	// Save a patch file
 	static bool save_patches(const patch_map& patches, const std::string& path, std::stringstream* log_messages = nullptr);
@@ -137,7 +140,7 @@ public:
 	static bool remove_patch(const patch_info& info);
 
 	// Load patch_config.yml
-	static patch_map load_config();
+	static patch_map load_config(bool& enable_legacy_patches);
 
 	// Load from file and append to member patches map
 	void append_global_patches();
