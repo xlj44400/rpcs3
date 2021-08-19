@@ -8258,9 +8258,13 @@ public:
 			set_vr(op.rt4, fmuladd(eval(-get_vr<f64[4]>(op.ra)), get_vr<f64[4]>(op.rb), get_vr<f64[4]>(op.rc)));
 		else if (g_cfg.core.spu_approx_xfloat || g_cfg.core.spu_fnms_accuracy == spu_instruction_accuracy::approximate)
 		{
-			const auto a = eval(clamp_smax(get_vr<f32[4]>(op.ra)));
-			const auto b = eval(clamp_smax(get_vr<f32[4]>(op.rb)));
-			set_vr(op.rt4, fma32x4(eval(-(a)), (b), get_vr<f32[4]>(op.rc)));
+			const auto a = get_vr<f32[4]>(op.ra);
+			const auto b = get_vr<f32[4]>(op.rb);
+			const auto ma = eval(sext<s32[4]>(fcmp_uno(a != fsplat<f32[4]>(0.))));
+			const auto mb = eval(sext<s32[4]>(fcmp_uno(b != fsplat<f32[4]>(0.))));
+			const auto ca = eval(bitcast<f32[4]>(bitcast<s32[4]>(a) & mb));
+			const auto cb = eval(bitcast<f32[4]>(bitcast<s32[4]>(b) & ma));
+			set_vr(op.rt4, fma32x4(eval(-(ca)), (cb), get_vr<f32[4]>(op.rc)));
 		}
 		else
 			set_vr(op.rt4, fma32x4(eval(-get_vr<f32[4]>(op.ra)), get_vr<f32[4]>(op.rb), get_vr<f32[4]>(op.rc)));
