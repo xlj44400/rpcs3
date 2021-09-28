@@ -8,8 +8,8 @@ rm -f ./bin/rpcs3.exp ./bin/rpcs3.lib ./bin/rpcs3.pdb ./bin/vc_redist.x64.exe
 
 # Prepare compatibility database for packaging, as well as
 # certificate for ssl (auto-updater)
-curl -sL 'https://rpcs3.net/compatibility?api=v1&export' | iconv -t UTF-8 > ./bin/GuiConfigs/compat_database.dat
-curl -sL 'https://curl.haxx.se/ca/cacert.pem' > ./bin/cacert.pem
+curl --proxy "http://127.0.0.1:1087" -sL 'https://rpcs3.net/compatibility?api=v1&export' | iconv -t UTF-8 > ./bin/GuiConfigs/compat_database.dat
+curl --proxy "http://127.0.0.1:1087" -sL 'https://curl.haxx.se/ca/cacert.pem' > ./bin/cacert.pem
 
 # Package artifacts
 7z a -m0=LZMA2 -mx9 "$BUILD" ./bin/*
