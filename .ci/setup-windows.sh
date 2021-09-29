@@ -58,7 +58,7 @@ download_and_verify()
         [ -e "$CACHE_DIR/$fileName" ] || curl -L -o "$CACHE_DIR/$fileName" "$url"
         fileChecksum=$("${algo}sum" "$CACHE_DIR/$fileName" | awk '{ print $1 }')
         [ "$fileChecksum" = "$correctChecksum" ] && return 0
-        rm "$CACHE_DIR/$fileName"
+        #rm "$CACHE_DIR/$fileName"
     done
 
     return 1;
